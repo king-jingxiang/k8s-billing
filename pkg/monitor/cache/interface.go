@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"pcl/k8s-billing/pkg/monitor/api"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 )
 
 // Cache collects pods/nodes/queues information

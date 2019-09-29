@@ -17,10 +17,10 @@ package main
 
 import (
 	"fmt"
-	"k8s.io/kubernetes/staging/src/k8s.io/component-base/cli/flag"
+	"k8s.io/component-base/cli/flag"
 	"os"
-	"pcl/k8s-billing/cmd/app"
-	"pcl/k8s-billing/cmd/app/options"
+	"github.com/ruanxingbaozi/k8s-billing/cmd/app"
+	"github.com/ruanxingbaozi/k8s-billing/cmd/app/options"
 	"time"
 
 	"github.com/golang/glog"

@@ -21,9 +21,9 @@ import (
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
-	"pcl/k8s-billing/cmd/app/options"
-	"pcl/k8s-billing/pkg/controller"
-	"pcl/k8s-billing/pkg/version"
+	"github.com/ruanxingbaozi/k8s-billing/cmd/app/options"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/controller"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/version"
 
 	// Register gcp auth
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"

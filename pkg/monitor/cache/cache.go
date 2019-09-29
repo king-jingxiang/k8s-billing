@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
-	"pcl/k8s-billing/pkg/monitor/api"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 	"sync"
 )
 
