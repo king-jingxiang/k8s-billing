@@ -17,17 +17,16 @@ package main
 
 import (
 	"fmt"
-	"k8s.io/apiserver/pkg/util/flag"
+	"k8s.io/kubernetes/staging/src/k8s.io/component-base/cli/flag"
+	"os"
 	"pcl/k8s-billing/cmd/app"
 	"pcl/k8s-billing/cmd/app/options"
-	"os"
 	"time"
 
 	"github.com/golang/glog"
 	"github.com/spf13/pflag"
 
 	"k8s.io/apimachinery/pkg/util/wait"
-
 )
 
 var logFlushFreq = pflag.Duration("log-flush-frequency", 5*time.Second, "Maximum number of seconds between log flushes")
