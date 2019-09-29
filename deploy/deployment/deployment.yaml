@@ -1,0 +1,36 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-billing
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: kube-system
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: k8s-billing
+  namespace: kube-system
+spec:
+  serviceName: k8s-billing
+  selector:
+    matchLabels:
+      app: k8s-billing
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-billing
+    spec:
+      containers:
+        - name: k8s-billing
+          image: k8s-billing:v1.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              hostPort: 38000

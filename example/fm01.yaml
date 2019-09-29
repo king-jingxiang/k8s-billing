@@ -1,0 +1,139 @@
+apiVersion: frameworkcontroller.microsoft.com/v1
+kind: Framework
+metadata:
+  creationTimestamp: "2019-09-20T02:24:19Z"
+  generation: 4
+  labels:
+    job-name: MoNuSeg-3v6rmc
+    job-type: execution
+    platform-group: 1wlsc2w5iew
+    platform-user: 97ABC70C36824EBD48BB63846FA00B90
+  name: c039a9c00db4d011e9089a50458a6e796289
+  namespace: default
+  resourceVersion: "16220272"
+  selfLink: /apis/frameworkcontroller.microsoft.com/v1/namespaces/default/frameworks/c039a9c00db4d011e9089a50458a6e796289
+  uid: c03b8536-db4d-11e9-aa4c-54802849a5f4
+spec:
+  description: ""
+  executionType: Start
+  retryPolicy:
+    fancyRetryPolicy: true
+    maxRetryCount: 0
+  taskRoles:
+    - frameworkAttemptCompletionPolicy:
+        minFailedTaskCount: 1
+        minSucceededTaskCount: 1
+      name: task1
+      task:
+        pod:
+          metadata:
+            creationTimestamp: null
+          spec:
+            containers:
+              - command:
+                  - sh
+                  - -c
+                  - /mnt/frameworkbarrier/injector.sh;sleep 30;pip install --upgrade pip;
+                    pip install --upgrade matplotlib; pip install --upgrade numpy; pip install
+                    --upgrade tensorflow-gpu==1.14.0 -i http://mirrors.aliyun.com/pypi/simple/
+                    --trusted-host mirrors.aliyun.com; cd /code; python my_MoNuSeg.py
+                image: 192.168.203.20:5000/user-images/deepo:v2.0
+                name: task1-container
+                resources:
+                  limits:
+                    cpu: "16"
+                    memory: 128Gi
+                    nvidia.com/gpu: "8"
+                volumeMounts:
+                  - mountPath: /mnt/frameworkbarrier
+                    name: frameworkbarrier-volume
+                  - mountPath: /code
+                    name: initcode
+                  - mountPath: /data/MoNuSeg
+                    name: mount-1568946259553
+                    readOnly: true
+                  - mountPath: /data/ImageNet
+                    name: mount-1568946259554
+                    readOnly: true
+                  - mountPath: /output
+                    name: mount-1568946259555
+            initContainers:
+              - image: frameworkcontroller/frameworkbarrier
+                name: task1init-container-0
+                resources: {}
+                volumeMounts:
+                  - mountPath: /mnt/frameworkbarrier
+                    name: frameworkbarrier-volume
+              - command:
+                  - sh
+                  - -c
+                  - sshpass -p 9M\!\&Eda^3mt%IFKy git clone pcl@192.168.203.47:/home/pcl/gitrepo/97ABC70C36824EBD48BB63846FA00B90/MoNuSeg-1568104229468.git
+                    /code ; rm -rf /code/.git & rm -f /code/.gitignore;mv /code/code/* /code;rm
+                    -rf /code/code
+                image: 192.168.202.74:5000/openi/ubuntu-git2
+                name: task1init-container-1
+                resources: {}
+                volumeMounts:
+                  - mountPath: /code
+                    name: initcode
+            nodeSelector:
+              resourceType: 2080ti
+            restartPolicy: Never
+            serviceAccountName: frameworkbarrier
+            volumes:
+              - emptyDir: {}
+                name: frameworkbarrier-volume
+              - emptyDir: {}
+                name: initcode
+              - hostPath:
+                  path: /datasets/97ABC70C36824EBD48BB63846FA00B90/MoNuSeg
+                name: mount-1568946259553
+              - hostPath:
+                  path: /datasets/67A0B2CDDAF4C4E5E4B9FBA5F1A6D61C/ImageNet
+                name: mount-1568946259554
+              - hostPath:
+                  path: /projects/97ABC70C36824EBD48BB63846FA00B90/MoNuSeg/outputs/3
+                name: mount-1568946259555
+        retryPolicy:
+          fancyRetryPolicy: false
+          maxRetryCount: 0
+      taskNumber: 1
+status:
+  attemptStatus:
+    completionStatus: null
+    completionTime: null
+    configMapName: c039a9c00db4d011e9089a50458a6e796289-attempt
+    configMapUID: c03cf03f-db4d-11e9-aa4c-54802849a5f4
+    id: 0
+    instanceUID: 0_c03cf03f-db4d-11e9-aa4c-54802849a5f4
+    startTime: "2019-09-20T02:24:19Z"
+    taskRoleStatuses:
+      - name: task1
+        taskStatuses:
+          - attemptStatus:
+              completionStatus: null
+              completionTime: null
+              id: 0
+              instanceUID: 0_c03f5ce6-db4d-11e9-aa4c-54802849a5f4
+              podHostIP: ""
+              podIP: ""
+              podName: c039a9c00db4d011e9089a50458a6e796289-task1-0
+              podUID: c03f5ce6-db4d-11e9-aa4c-54802849a5f4
+              startTime: "2019-09-20T02:24:19Z"
+            completionTime: null
+            index: 0
+            retryPolicyStatus:
+              accountableRetriedCount: 0
+              retryDelaySec: null
+              totalRetriedCount: 0
+            startTime: "2019-09-20T02:24:19Z"
+            state: AttemptPreparing
+            transitionTime: "2019-09-20T02:24:19Z"
+  completionTime: null
+  retryPolicyStatus:
+    accountableRetriedCount: 0
+    retryDelaySec: null
+    totalRetriedCount: 0
+  startTime: "2019-09-20T02:24:19Z"
+  state: AttemptPreparing
+  transitionTime: "2019-09-20T02:24:19Z"

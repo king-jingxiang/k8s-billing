@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    FC_CONFIGMAP_NAME: batchjob-attempt
+    FC_CONFIGMAP_UID: 6bc19d78-c973-11e9-87a2-7085c2832378
+    FC_FRAMEWORK_ATTEMPT_ID: "0"
+    FC_FRAMEWORK_ATTEMPT_INSTANCE_UID: 0_6bc19d78-c973-11e9-87a2-7085c2832378
+    FC_FRAMEWORK_NAME: batchjob
+    FC_FRAMEWORK_NAMESPACE: ns01
+    FC_POD_NAME: batchjob-worker-1
+    FC_TASK_ATTEMPT_ID: "0"
+    FC_TASK_INDEX: "1"
+    FC_TASKROLE_NAME: worker
+    scheduling.k8s.io/group-name: batchjob
+  creationTimestamp: "2019-08-28T09:08:37Z"
+  labels:
+    FC_FRAMEWORK_NAME: batchjob
+    FC_TASKROLE_NAME: worker
+  name: batchjob-worker-1
+  namespace: ns01
+  ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ConfigMap
+      name: batchjob-attempt
+      uid: 6bc19d78-c973-11e9-87a2-7085c2832378
+  resourceVersion: "1087617"
+  selfLink: /api/v1/namespaces/ns01/pods/batchjob-worker-1
+  uid: 6bc33e32-c973-11e9-87a2-7085c2832378
+spec:
+  containers:
+    - command:
+        - sh
+        - -c
+        - sleep 1d
+      env:
+        - name: FC_FRAMEWORK_NAMESPACE
+          value: ns01
+        - name: FC_FRAMEWORK_NAME
+          value: batchjob
+        - name: FC_TASKROLE_NAME
+          value: worker
+        - name: FC_TASK_INDEX
+          value: "1"
+        - name: FC_CONFIGMAP_NAME
+          value: batchjob-attempt
+        - name: FC_POD_NAME
+          value: batchjob-worker-1
+        - name: FC_FRAMEWORK_ATTEMPT_ID
+          value: "0"
+        - name: FC_FRAMEWORK_ATTEMPT_INSTANCE_UID
+          value: 0_6bc19d78-c973-11e9-87a2-7085c2832378
+        - name: FC_CONFIGMAP_UID
+          value: 6bc19d78-c973-11e9-87a2-7085c2832378
+        - name: FC_TASK_ATTEMPT_ID
+          value: "0"
+        - name: FC_POD_UID
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.uid
+        - name: FC_TASK_ATTEMPT_INSTANCE_UID
+          value: 0_$(FC_POD_UID)
+      image: busybox
+      imagePullPolicy: Always
+      name: worker
+      resources:
+        requests:
+          cpu: "4"
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: default-token-kf88q
+          readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: amax
+  priority: 10
+  priorityClassName: worker-pri
+  restartPolicy: Never
+  schedulerName: kube-batch
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+  volumes:
+    - name: default-token-kf88q
+      secret:
+        defaultMode: 420
+        secretName: default-token-kf88q
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2019-08-28T09:08:57Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2019-08-28T09:09:05Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2019-08-28T09:09:05Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2019-08-28T09:08:57Z"
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - containerID: docker://b93d661ec42120d09da75b0fcef5a7a6d19ed5d63094641b593f9509a49a7207
+      image: busybox:latest
+      imageID: docker-pullable://busybox@sha256:9f1003c480699be56815db0f8146ad2e22efea85129b5b5983d0e0fb52d9ab70
+      lastState: {}
+      name: worker
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: "2019-08-28T09:09:05Z"
+  hostIP: 192.168.113.18
+  phase: Running
+  podIP: 10.244.0.225
+  qosClass: Burstable
+  startTime: "2019-08-28T09:08:57Z"
