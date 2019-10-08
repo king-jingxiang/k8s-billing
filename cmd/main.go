@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"k8s.io/component-base/cli/flag"
 	"os"
-	"github.com/ruanxingbaozi/k8s-billing/cmd/app"
-	"github.com/ruanxingbaozi/k8s-billing/cmd/app/options"
+	"k8s-billing/cmd/app"
+	"k8s-billing/cmd/app/options"
 	"time"
 
 	"github.com/golang/glog"

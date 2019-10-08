@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	fcapi "github.com/microsoft/frameworkcontroller/pkg/apis/frameworkcontroller/v1"
-	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
+	"k8s-billing/pkg/monitor/api"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/cache"
 )
