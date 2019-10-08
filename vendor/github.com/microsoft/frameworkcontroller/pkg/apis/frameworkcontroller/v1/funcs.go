@@ -24,60 +24,18 @@ package v1
 
 import (
 	"fmt"
-	"github.com/microsoft/frameworkcontroller/pkg/common"
-	core "k8s.io/api/core/v1"
-	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/klog"
-	"strconv"
 	"strings"
+	"strconv"
+	log "github.com/sirupsen/logrus"
+	core "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
+	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/microsoft/frameworkcontroller/pkg/common"
 )
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Utils
 ///////////////////////////////////////////////////////////////////////////////////////
-func (cc CompletionCode) Ptr() *CompletionCode {
-	return &cc
-}
-
-func (ccr CompletionCodeRange) Int32Range() Int32Range {
-	return Int32Range{(*int32)(&ccr.Min), (*int32)(&ccr.Max)}
-}
-
-func (ccr CompletionCodeRange) Contains(cc CompletionCode) bool {
-	return ccr.Int32Range().Contains(int32(cc))
-}
-
-func (ccr CompletionCodeRange) String() string {
-	return ccr.Int32Range().String()
-}
-
-func (ir Int32Range) Contains(v int32) bool {
-	if ir.Min == nil && ir.Max == nil {
-		return true
-	}
-	if ir.Min == nil {
-		return *ir.Max >= v
-	}
-	if ir.Max == nil {
-		return *ir.Min <= v
-	}
-	return *ir.Min <= v && *ir.Max >= v
-}
-
-func (ir Int32Range) String() string {
-	if ir.Min == nil && ir.Max == nil {
-		return fmt.Sprintf("[nil, nil]")
-	}
-	if ir.Min == nil {
-		return fmt.Sprintf("[nil, %v]", *ir.Max)
-	}
-	if ir.Max == nil {
-		return fmt.Sprintf("[%v, nil]", *ir.Min)
-	}
-	return fmt.Sprintf("[%v, %v]", *ir.Min, *ir.Max)
-}
-
 func GetConfigMapName(frameworkName string) string {
 	return strings.Join([]string{frameworkName, "attempt"}, "-")
 }
@@ -105,7 +63,7 @@ func GetFrameworkAttemptInstanceUID(frameworkAttemptID int32, configMapUID *type
 }
 
 func SplitFrameworkAttemptInstanceUID(frameworkAttemptInstanceUID *types.UID) (
-	frameworkAttemptID int32, configMapUID *types.UID) {
+		frameworkAttemptID int32, configMapUID *types.UID) {
 	parts := strings.Split(string(*frameworkAttemptInstanceUID), "_")
 	i, err := strconv.ParseInt(parts[0], 10, 32)
 	if err != nil {
@@ -121,7 +79,7 @@ func GetTaskAttemptInstanceUID(taskAttemptID int32, podUID *types.UID) *types.UI
 }
 
 func SplitTaskAttemptInstanceUID(taskAttemptInstanceUID *types.UID) (
-	taskAttemptID int32, podUID *types.UID) {
+		taskAttemptID int32, podUID *types.UID) {
 	parts := strings.Split(string(*taskAttemptInstanceUID), "_")
 	i, err := strconv.ParseInt(parts[0], 10, 32)
 	if err != nil {
@@ -130,26 +88,6 @@ func SplitTaskAttemptInstanceUID(taskAttemptInstanceUID *types.UID) (
 			*taskAttemptInstanceUID, err))
 	}
 	return int32(i), common.PtrUIDStr(parts[1])
-}
-
-func getObjectSnapshotLogTail(obj interface{}) string {
-	return ": ObjectSnapshot: " + common.ToJson(obj)
-}
-
-func GetFrameworkSnapshotLogTail(f *Framework) string {
-	if f.GroupVersionKind().Empty() {
-		f = f.DeepCopy()
-		f.SetGroupVersionKind(FrameworkGroupVersionKind)
-	}
-	return getObjectSnapshotLogTail(f)
-}
-
-func GetPodSnapshotLogTail(pod *core.Pod) string {
-	if pod.GroupVersionKind().Empty() {
-		pod = pod.DeepCopy()
-		pod.SetGroupVersionKind(PodGroupVersionKind)
-	}
-	return getObjectSnapshotLogTail(pod)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +105,7 @@ func (f *Framework) Key() string {
 func (f *Framework) TaskRoleSpec(taskRoleName string) *TaskRoleSpec {
 	for _, taskRole := range f.Spec.TaskRoles {
 		if taskRole.Name == taskRoleName {
-			return taskRole
+			return &taskRole
 		}
 	}
 	panic(fmt.Errorf("[%v]: TaskRole is not found in Spec", taskRoleName))
@@ -216,14 +154,14 @@ func (ts *TaskStatus) CompletionType() CompletionType {
 	return ts.AttemptStatus.CompletionStatus.Type
 }
 
-func (f *Framework) TaskRoleStatuses() []*TaskRoleStatus {
+func (f *Framework) TaskRoleStatuses() []TaskRoleStatus {
 	return f.Status.AttemptStatus.TaskRoleStatuses
 }
 
 func (f *Framework) TaskRoleStatus(taskRoleName string) *TaskRoleStatus {
 	for _, taskRoleStatus := range f.TaskRoleStatuses() {
 		if taskRoleStatus.Name == taskRoleName {
-			return taskRoleStatus
+			return &taskRoleStatus
 		}
 	}
 	panic(fmt.Errorf("[%v]: TaskRole is not found in Status", taskRoleName))
@@ -232,7 +170,7 @@ func (f *Framework) TaskRoleStatus(taskRoleName string) *TaskRoleStatus {
 func (f *Framework) TaskStatus(taskRoleName string, taskIndex int32) *TaskStatus {
 	taskRoleStatus := f.TaskRoleStatus(taskRoleName)
 	if 0 <= taskIndex && taskIndex < int32(len(taskRoleStatus.TaskStatuses)) {
-		return taskRoleStatus.TaskStatuses[taskIndex]
+		return &taskRoleStatus.TaskStatuses[taskIndex]
 	}
 	panic(fmt.Errorf("[%v][%v]: Task is not found in Status", taskRoleName, taskIndex))
 }
@@ -243,26 +181,6 @@ func (f *Framework) IsCompleted() bool {
 
 func (ts *TaskStatus) IsCompleted() bool {
 	return ts.State == TaskCompleted
-}
-
-func (f *Framework) IsRunning() bool {
-	return f.Status.State == FrameworkAttemptRunning
-}
-
-func (ts *TaskStatus) IsRunning() bool {
-	return ts.State == TaskAttemptRunning
-}
-
-func (f *Framework) IsCompleting() bool {
-	return f.Status.State == FrameworkAttemptDeletionPending ||
-		f.Status.State == FrameworkAttemptDeletionRequested ||
-		f.Status.State == FrameworkAttemptDeleting
-}
-
-func (ts *TaskStatus) IsCompleting() bool {
-	return ts.State == TaskAttemptDeletionPending ||
-		ts.State == TaskAttemptDeletionRequested ||
-		ts.State == TaskAttemptDeleting
 }
 
 func (ct CompletionType) IsSucceeded() bool {
@@ -298,14 +216,14 @@ func (ct CompletionType) ContainsAttribute(attribute CompletionTypeAttribute) bo
 	return false
 }
 
-func (trs *TaskRoleStatus) GetTaskStatuses(selector TaskStatusSelector) []*TaskStatus {
+func (trs *TaskRoleStatus) GetTaskStatuses(selector TaskStatusSelector) []TaskStatus {
 	if selector == nil {
 		return trs.TaskStatuses
 	}
 
-	taskStatuses := []*TaskStatus{}
+	taskStatuses := []TaskStatus{}
 	for _, taskStatus := range trs.TaskStatuses {
-		if selector(taskStatus) {
+		if selector(&taskStatus) {
 			taskStatuses = append(taskStatuses, taskStatus)
 		}
 	}
@@ -325,11 +243,7 @@ func (f *Framework) GetTaskCount(selector TaskStatusSelector) int32 {
 }
 
 func (f *Framework) AreAllTasksCompleted() bool {
-	return f.GetTaskCount((*TaskStatus).IsCompleted) == f.GetTaskCount(nil)
-}
-
-func (f *Framework) IsAnyTaskRunning() bool {
-	return f.GetTaskCount((*TaskStatus).IsRunning) > 0
+	return f.GetTaskCount(nil) == f.GetTaskCount((*TaskStatus).IsCompleted)
 }
 
 func (f *Framework) NewConfigMap() *core.ConfigMap {
@@ -357,9 +271,9 @@ func (f *Framework) NewConfigMap() *core.ConfigMap {
 
 	return cm
 }
-func (f *Framework) NewPod(config *Config, cm *core.ConfigMap, taskRoleName string, taskIndex int32) *core.Pod {
-	// Deep copy Task.Pod before modify it
-	taskPodJson := common.ToJson(f.TaskRoleSpec(taskRoleName).Task.Pod)
+
+func (f *Framework) NewPod(cm *core.ConfigMap, taskRoleName string, taskIndex int32) *core.Pod {
+	taskPod := f.TaskRoleSpec(taskRoleName).Task.Pod.DeepCopy()
 	taskStatus := f.TaskStatus(taskRoleName, taskIndex)
 	taskIndexStr := fmt.Sprint(taskIndex)
 	frameworkAttemptIDStr := fmt.Sprint(f.FrameworkAttemptID())
@@ -370,34 +284,12 @@ func (f *Framework) NewPod(config *Config, cm *core.ConfigMap, taskRoleName stri
 		taskStatus.TaskAttemptID(),
 		common.PtrUIDStr(common.ReferEnvVar(EnvNamePodUID))))
 
-	// Replace Placeholders in Task.Pod
-	podTemplate := core.PodTemplateSpec{}
-
-	placeholderReplacer := strings.NewReplacer(
-		common.ReferPlaceholder(PlaceholderFrameworkNamespace), f.Namespace,
-		common.ReferPlaceholder(PlaceholderFrameworkName), f.Name,
-		common.ReferPlaceholder(PlaceholderTaskRoleName), taskRoleName,
-		common.ReferPlaceholder(PlaceholderTaskIndex), taskIndexStr,
-		common.ReferPlaceholder(PlaceholderConfigMapName), f.ConfigMapName(),
-		common.ReferPlaceholder(PlaceholderPodName), taskStatus.PodName())
-
-	// Using Json to avoid breaking one Placeholder to multiple lines
-	common.FromJson(placeholderReplacer.Replace(taskPodJson), &podTemplate)
-	// set pod scheduler name kube-batch
-	if *config.EnableKubeBatch {
-		podTemplate.Spec.SchedulerName = KubeBatchSchedulerName
-		// when pod priorityClass is empty set framework priorityClass
-		if podTemplate.Spec.PriorityClassName == "" {
-			podTemplate.Spec.PriorityClassName = f.Spec.PriorityClassName
-		}
-	}
-
-	// Override Task.Pod
 	pod := &core.Pod{
-		ObjectMeta: podTemplate.ObjectMeta,
-		Spec:       podTemplate.Spec,
+		ObjectMeta: taskPod.ObjectMeta,
+		Spec:       taskPod.Spec,
 	}
 
+	// Rewrite Task.Pod
 	pod.Name = taskStatus.PodName()
 	pod.Namespace = f.Namespace
 
@@ -424,10 +316,7 @@ func (f *Framework) NewPod(config *Config, cm *core.ConfigMap, taskRoleName stri
 	pod.Annotations[AnnotationKeyFrameworkAttemptInstanceUID] = frameworkAttemptInstanceUIDStr
 	pod.Annotations[AnnotationKeyConfigMapUID] = configMapUIDStr
 	pod.Annotations[AnnotationKeyTaskAttemptID] = taskAttemptIDStr
-	// add kube-batch podgroup annotations
-	if *config.EnableKubeBatch {
-		pod.Annotations[AnnotationKeyPodGroup] = f.Name
-	}
+
 	if pod.Labels == nil {
 		pod.Labels = map[string]string{}
 	}
@@ -458,15 +347,13 @@ func (f *Framework) NewPod(config *Config, cm *core.ConfigMap, taskRoleName stri
 	// is failed and the termination message file specified by the terminationMessagePath
 	// is not found or empty.
 	for i := range pod.Spec.Containers {
-		pod.Spec.Containers[i].Env = append(append([]core.EnvVar{},
-			predefinedEnvs...), pod.Spec.Containers[i].Env...)
+		pod.Spec.Containers[i].Env = append(predefinedEnvs, pod.Spec.Containers[i].Env...)
 		if len(pod.Spec.Containers[i].TerminationMessagePolicy) == 0 {
 			pod.Spec.Containers[i].TerminationMessagePolicy = core.TerminationMessageFallbackToLogsOnError
 		}
 	}
 	for i := range pod.Spec.InitContainers {
-		pod.Spec.InitContainers[i].Env = append(append([]core.EnvVar{},
-			predefinedEnvs...), pod.Spec.InitContainers[i].Env...)
+		pod.Spec.InitContainers[i].Env = append(predefinedEnvs, pod.Spec.InitContainers[i].Env...)
 		if len(pod.Spec.InitContainers[i].TerminationMessagePolicy) == 0 {
 			pod.Spec.InitContainers[i].TerminationMessagePolicy = core.TerminationMessageFallbackToLogsOnError
 		}
@@ -491,11 +378,10 @@ func (f *Framework) NewFrameworkStatus() *FrameworkStatus {
 }
 
 func (f *Framework) NewFrameworkAttemptStatus(
-	frameworkAttemptID int32) FrameworkAttemptStatus {
+		frameworkAttemptID int32) FrameworkAttemptStatus {
 	return FrameworkAttemptStatus{
 		ID:               frameworkAttemptID,
 		StartTime:        meta.Now(),
-		RunTime:          nil,
 		CompletionTime:   nil,
 		InstanceUID:      nil,
 		ConfigMapName:    GetConfigMapName(f.Name),
@@ -505,20 +391,20 @@ func (f *Framework) NewFrameworkAttemptStatus(
 	}
 }
 
-func (f *Framework) NewTaskRoleStatuses() []*TaskRoleStatus {
-	trss := []*TaskRoleStatus{}
+func (f *Framework) NewTaskRoleStatuses() []TaskRoleStatus {
+	trss := []TaskRoleStatus{}
 	for _, taskRole := range f.Spec.TaskRoles {
-		trs := TaskRoleStatus{Name: taskRole.Name, TaskStatuses: []*TaskStatus{}}
+		trs := TaskRoleStatus{Name: taskRole.Name, TaskStatuses: []TaskStatus{}}
 		for taskIndex := int32(0); taskIndex < taskRole.TaskNumber; taskIndex++ {
 			trs.TaskStatuses = append(trs.TaskStatuses, f.NewTaskStatus(taskRole.Name, taskIndex))
 		}
-		trss = append(trss, &trs)
+		trss = append(trss, trs)
 	}
 	return trss
 }
 
-func (f *Framework) NewTaskStatus(taskRoleName string, taskIndex int32) *TaskStatus {
-	return &TaskStatus{
+func (f *Framework) NewTaskStatus(taskRoleName string, taskIndex int32) TaskStatus {
+	return TaskStatus{
 		Index:          taskIndex,
 		StartTime:      meta.Now(),
 		CompletionTime: nil,
@@ -534,11 +420,10 @@ func (f *Framework) NewTaskStatus(taskRoleName string, taskIndex int32) *TaskSta
 }
 
 func (f *Framework) NewTaskAttemptStatus(
-	taskRoleName string, taskIndex int32, taskAttemptID int32) TaskAttemptStatus {
+		taskRoleName string, taskIndex int32, taskAttemptID int32) TaskAttemptStatus {
 	return TaskAttemptStatus{
 		ID:               taskAttemptID,
 		StartTime:        meta.Now(),
-		RunTime:          nil,
 		CompletionTime:   nil,
 		InstanceUID:      nil,
 		PodName:          GetPodName(f.Name, taskRoleName, taskIndex),
@@ -550,9 +435,9 @@ func (f *Framework) NewTaskAttemptStatus(
 }
 
 func (cc CompletionCode) NewCompletionStatus(diagnostics string) *CompletionStatus {
-	cci, exists := CompletionCodeInfoMap[cc]
+	cci, exists := CompletionCodeInfos[cc]
 	if !exists {
-		cci = CompletionCodeInfoContainerUnrecognizedFailed
+		cci = CompletionCodeInfoContainerFailedWithUnknownExitCode
 	}
 	return &CompletionStatus{
 		Code:        cc,
@@ -584,20 +469,10 @@ func (rd RetryDecision) String() string {
 }
 
 func (rp RetryPolicySpec) ShouldRetry(
-	rps RetryPolicyStatus,
-	cs *CompletionStatus,
-	minDelaySecForTransientConflictFailed int64,
-	maxDelaySecForTransientConflictFailed int64) RetryDecision {
-	ct := cs.Type
-
-	// 0. Built-in Always-on RetryPolicy
-	if cs.Code == CompletionCodePodSpecInvalid ||
-		cs.Code == CompletionCodeStopFrameworkRequested ||
-		cs.Code == CompletionCodeFrameworkAttemptCompletion {
-		return RetryDecision{false, true, 0, fmt.Sprintf(
-			"CompletionCode is %v, %v", cs.Code, cs.Phrase)}
-	}
-
+		rps RetryPolicyStatus,
+		ct CompletionType,
+		minDelaySecForTransientConflictFailed int64,
+		maxDelaySecForTransientConflictFailed int64) RetryDecision {
 	// 1. FancyRetryPolicy
 	if rp.FancyRetryPolicy {
 		reason := fmt.Sprintf(
@@ -622,8 +497,8 @@ func (rp RetryPolicySpec) ShouldRetry(
 
 	// 2. NormalRetryPolicy
 	if (rp.MaxRetryCount == ExtendedUnlimitedValue) ||
-		(ct.IsFailed() && rp.MaxRetryCount == UnlimitedValue) ||
-		(ct.IsFailed() && rps.AccountableRetriedCount < rp.MaxRetryCount) {
+			(ct.IsFailed() && rp.MaxRetryCount == UnlimitedValue) ||
+			(ct.IsFailed() && rps.AccountableRetriedCount < rp.MaxRetryCount) {
 		return RetryDecision{true, true, 0, fmt.Sprintf(
 			"AccountableRetriedCount %v has not reached MaxRetryCount %v",
 			rps.AccountableRetriedCount, rp.MaxRetryCount)}
@@ -649,49 +524,27 @@ func (f *Framework) TransitionFrameworkState(dstState FrameworkState) {
 		return
 	}
 
-	now := common.PtrNow()
-	if dstState == FrameworkAttemptRunning {
-		f.Status.AttemptStatus.RunTime = now
-	}
-	if dstState == FrameworkAttemptCompleted {
-		f.Status.AttemptStatus.CompletionTime = now
-	}
-	if dstState == FrameworkCompleted {
-		f.Status.CompletionTime = now
-	}
-
 	f.Status.State = dstState
-	f.Status.TransitionTime = *now
+	f.Status.TransitionTime = meta.Now()
 
-	klog.Infof(
+	log.Infof(
 		"[%v]: Transitioned Framework from [%v] to [%v]",
 		f.Key(), srcState, dstState)
 }
 
 // This is the only interface to modify TaskState
 func (f *Framework) TransitionTaskState(
-	taskRoleName string, taskIndex int32, dstState TaskState) {
+		taskRoleName string, taskIndex int32, dstState TaskState) {
 	taskStatus := f.TaskStatus(taskRoleName, taskIndex)
 	srcState := taskStatus.State
 	if srcState == dstState {
 		return
 	}
 
-	now := common.PtrNow()
-	if dstState == TaskAttemptRunning {
-		taskStatus.AttemptStatus.RunTime = now
-	}
-	if dstState == TaskAttemptCompleted {
-		taskStatus.AttemptStatus.CompletionTime = now
-	}
-	if dstState == TaskCompleted {
-		taskStatus.CompletionTime = now
-	}
-
 	taskStatus.State = dstState
-	taskStatus.TransitionTime = *now
+	taskStatus.TransitionTime = meta.Now()
 
-	klog.Infof(
+	log.Infof(
 		"[%v][%v][%v]: Transitioned Task from [%v] to [%v]",
 		f.Key(), taskRoleName, taskIndex, srcState, dstState)
 }

@@ -24,15 +24,15 @@ package v1
 
 import (
 	core "k8s.io/api/core/v1"
-	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 type FrameworkList struct {
-	meta.TypeMeta `json:",inline"`
-	meta.ListMeta `json:"metadata"`
-	Items         []Framework `json:"items"`
+	meta.TypeMeta     `json:",inline"`
+	meta.ListMeta     `json:"metadata"`
+	Items []Framework `json:"items"`
 }
 
 // +genclient
@@ -79,27 +79,20 @@ type FrameworkList struct {
 //    2. Do not change the OwnerReferences of the managed ConfigMap and Pods.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 type Framework struct {
-	meta.TypeMeta   `json:",inline"`
-	meta.ObjectMeta `json:"metadata"`
-	Spec            FrameworkSpec    `json:"spec"`
-	Status          *FrameworkStatus `json:"status"`
+	meta.TypeMeta           `json:",inline"`
+	meta.ObjectMeta         `json:"metadata"`
+	Spec   FrameworkSpec    `json:"spec"`
+	Status *FrameworkStatus `json:"status"`
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Spec
 //////////////////////////////////////////////////////////////////////////////////////////////////
 type FrameworkSpec struct {
-	Description string `json:"description"`
-	// Only support to update from ExecutionStart to ExecutionStop
+	Description   string          `json:"description"`
 	ExecutionType ExecutionType   `json:"executionType"`
 	RetryPolicy   RetryPolicySpec `json:"retryPolicy"`
-	TaskRoles     []*TaskRoleSpec `json:"taskRoles"`
-	// kube batch gang scheduling minNumber
-	MinMember int32 `json:"minMember,omitempty"`
-	// kube batch queue name
-	Queue string `json:"queue,omitempty"`
-	// framework priorityClass
-	PriorityClassName string `json:"priorityClassName,omitempty"`
+	TaskRoles     []TaskRoleSpec  `json:"taskRoles"`
 }
 
 type TaskRoleSpec struct {
@@ -138,11 +131,6 @@ const (
 //    complete a single Task in the TaskRole.
 //
 // Usage:
-// If the Pod Spec is invalid or
-// the ExecutionType is ExecutionStop or
-// the Task's FrameworkAttempt is completing,
-//   will not retry.
-//
 // If the FancyRetryPolicy is enabled,
 //   will retry if the completion is due to Transient Failed CompletionType,
 //   will not retry if the completion is due to Permanent Failed CompletionType,
@@ -173,9 +161,6 @@ const (
 //    So, the actual retried attempt instances maybe exceed the RetryPolicySpec
 //    in rare cases, however, the RetryPolicyStatus will never exceed the
 //    RetryPolicySpec.
-// 2. Resort to other spec to control other kind of RetryPolicy:
-//    1. Container RetryPolicy is the RestartPolicy in Pod Spec.
-//       See https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
 type RetryPolicySpec struct {
 	FancyRetryPolicy bool  `json:"fancyRetryPolicy"`
 	MaxRetryCount    int32 `json:"maxRetryCount"`
@@ -187,20 +172,17 @@ type RetryPolicySpec struct {
 //    2. The CompletionStatus of the completed FrameworkAttempt.
 //
 // Usage:
-// 1. If the ExecutionType is ExecutionStop, immediately complete the FrameworkAttempt,
-//    regardless of any uncompleted Task, and the CompletionStatus is failed which
-//    is not generated from any Task.
-// 2. If MinFailedTaskCount != -1 and MinFailedTaskCount <= failed Task count of
+// 1. If MinFailedTaskCount != -1 and MinFailedTaskCount <= failed Task count of
 //    current TaskRole, immediately complete the FrameworkAttempt, regardless of
 //    any uncompleted Task, and the CompletionStatus is failed which is generated
 //    from the Task which triggers the completion.
-// 3. If MinSucceededTaskCount != -1 and MinSucceededTaskCount <= succeeded Task
+// 2. If MinSucceededTaskCount != -1 and MinSucceededTaskCount <= succeeded Task
 //    count of current TaskRole, immediately complete the FrameworkAttempt, regardless
 //    of any uncompleted Task, and the CompletionStatus is succeeded which is
 //    generated from the Task which triggers the completion.
-// 4. If multiple above 1. and 2. conditions of all TaskRoles are satisfied at the
+// 3. If multiple above 1. and 2. conditions of all TaskRoles are satisfied at the
 //    same time, the behavior can be any one of these satisfied conditions.
-// 5. If none of above 1. and 2. conditions of all TaskRoles are satisfied until all
+// 4. If none of above 1. and 2. conditions of all TaskRoles are satisfied until all
 //    Tasks of the Framework are completed, immediately complete the FrameworkAttempt
 //    and the CompletionStatus is succeeded which is not generated from any Task.
 //
@@ -208,12 +190,6 @@ type RetryPolicySpec struct {
 // 1. When the FrameworkAttempt is completed, the FrameworkState is transitioned to
 //    FrameworkAttemptCompleted, so the Framework may still be retried with another
 //    new FrameworkAttempt according to the Framework RetryPolicySpec.
-// 2. Resort to other spec to control other kind of CompletionPolicy:
-//    1. Framework CompletionPolicy is equivalent to Framework RetryPolicy.
-//    2. Task CompletionPolicy is equivalent to Task RetryPolicy.
-//    3. TaskAttempt CompletionPolicy is equivalent to Pod CompletionPolicy,
-//       i.e. the PodPhase conditions for PodSucceeded or PodFailed.
-//       See https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase
 type CompletionPolicySpec struct {
 	MinFailedTaskCount    int32 `json:"minFailedTaskCount"`
 	MinSucceededTaskCount int32 `json:"minSucceededTaskCount"`
@@ -262,7 +238,6 @@ type FrameworkAttemptStatus struct {
 	ID int32 `json:"id"`
 
 	StartTime      meta.Time  `json:"startTime"`
-	RunTime        *meta.Time `json:"runTime"`
 	CompletionTime *meta.Time `json:"completionTime"`
 
 	// Current associated FrameworkAttemptInstance:
@@ -277,7 +252,7 @@ type FrameworkAttemptStatus struct {
 	// ConfigMapUID can also universally locate the FrameworkAttemptInstance.
 	ConfigMapUID     *types.UID        `json:"configMapUID"`
 	CompletionStatus *CompletionStatus `json:"completionStatus"`
-	TaskRoleStatuses []*TaskRoleStatus `json:"taskRoleStatuses"`
+	TaskRoleStatuses []TaskRoleStatus  `json:"taskRoleStatuses"`
 }
 
 type TaskRoleStatus struct {
@@ -285,7 +260,7 @@ type TaskRoleStatus struct {
 	Name string `json:"name"`
 
 	// Tasks with TaskIndex in range [0, TaskNumber)
-	TaskStatuses []*TaskStatus `json:"taskStatuses"`
+	TaskStatuses []TaskStatus `json:"taskStatuses"`
 }
 
 type TaskStatus struct {
@@ -308,7 +283,6 @@ type TaskAttemptStatus struct {
 	ID int32 `json:"id"`
 
 	StartTime      meta.Time  `json:"startTime"`
-	RunTime        *meta.Time `json:"runTime"`
 	CompletionTime *meta.Time `json:"completionTime"`
 
 	// Current associated TaskAttemptInstance:
@@ -345,20 +319,32 @@ type RetryPolicyStatus struct {
 	// Used to expose the ScheduledRetryTime after which current retry can be
 	// executed.
 	// ScheduledRetryTime = AttemptStatus.CompletionTime + RetryDelaySec
-	// It is not nil only if the retry has been scheduled but not yet executed, i.e.
-	// current attempt is in AttemptCompleted state and is not the last attempt.
+	// It is available and meaningful if and only if current attempt is in
+	// AttemptCompleted state.
 	RetryDelaySec *int64 `json:"retryDelaySec"`
 }
 
 type CompletionStatus struct {
-	// See corresponding fields in CompletionCodeInfo.
-	Code   CompletionCode   `json:"code"`
+	// CompletionCode Convention:
+	// 1. NonNegative:
+	//    The CompletionCode is the ExitCode of the Framework's Container which
+	//    triggers the completion.
+	// 2. Negative:
+	//    -1XX: Framework Predefined Transient Error
+	//    -2XX: Framework Predefined Permanent Error
+	//    -3XX: Framework Predefined Unknown Error
+	//    The CompletionCode is the ExitCode of the Framework's Predefined Error
+	//    which triggers the completion.
+	Code CompletionCode `json:"code"`
+	// The textual phrase representation of the CompletionCode.
 	Phrase CompletionPhrase `json:"phrase"`
-	Type   CompletionType   `json:"type"`
 
-	// It is the summarized diagnostic information of the completion.
-	// For detailed and structured diagnostic information, check its outer
-	// embedding type.
+	// CompletionType is determined by the CompletionCode and the Predefined
+	// CompletionCodeInfos.
+	// See CompletionCodeInfos.
+	Type CompletionType `json:"type"`
+
+	// The detailed diagnostic information of the completion.
 	Diagnostics string `json:"diagnostics"`
 }
 
@@ -367,8 +353,8 @@ type CompletionCode int32
 type CompletionPhrase string
 
 type CompletionType struct {
-	Name       CompletionTypeName        `json:"name" yaml:"name"`
-	Attributes []CompletionTypeAttribute `json:"attributes" yaml:"attributes"`
+	Name       CompletionTypeName        `json:"name"`
+	Attributes []CompletionTypeAttribute `json:"attributes"`
 }
 
 type CompletionTypeName string
@@ -389,6 +375,11 @@ const (
 	// such as failed due to incorrect usage, incorrect configuration, etc.
 	CompletionTypeAttributePermanent CompletionTypeAttribute = "Permanent"
 
+	// The completion must be caused by External, i.e. the Platform.
+	CompletionTypeAttributeExternal CompletionTypeAttribute = "External"
+	// The completion must be caused by Internal, i.e. the Framework itself.
+	CompletionTypeAttributeInternal CompletionTypeAttribute = "Internal"
+
 	// The completion must be caused by Resource Conflict (Resource Contention):
 	// such as failed due to Gang Allocation timeout.
 	CompletionTypeAttributeConflict CompletionTypeAttribute = "Conflict"
@@ -403,36 +394,23 @@ type FrameworkState string
 
 const (
 	// ConfigMap does not exist and
-	// may not have been creation requested successfully and is expected to exist.
+	// has not been creation requested.
 	// [StartState]
 	// [AttemptStartState]
 	// -> FrameworkAttemptCreationRequested
-	// -> FrameworkAttemptCompleted
 	FrameworkAttemptCreationPending FrameworkState = "AttemptCreationPending"
 
 	// ConfigMap does not exist and
-	// must have been creation requested successfully and is expected to exist.
+	// has been creation requested and is expected to exist.
 	// [AssociatedState]
-	// -> FrameworkAttemptPreparing
+	// -> FrameworkAttemptRunning
 	// -> FrameworkAttemptDeleting
 	// -> FrameworkAttemptCompleted
 	FrameworkAttemptCreationRequested FrameworkState = "AttemptCreationRequested"
 
 	// ConfigMap exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// FrameworkAttemptCompletionPolicy may not have been satisfied and
-	// no Task of current attempt has ever entered TaskAttemptRunning state.
-	// [AssociatedState]
-	// -> FrameworkAttemptRunning
-	// -> FrameworkAttemptDeletionPending
-	// -> FrameworkAttemptDeleting
-	// -> FrameworkAttemptCompleted
-	FrameworkAttemptPreparing FrameworkState = "AttemptPreparing"
-
-	// ConfigMap exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// FrameworkAttemptCompletionPolicy may not have been satisfied and
-	// at least one Task of current attempt has ever entered TaskAttemptRunning state.
+	// has not been deletion requested and
+	// is not pending to be deletion requested.
 	// [AssociatedState]
 	// -> FrameworkAttemptDeletionPending
 	// -> FrameworkAttemptDeleting
@@ -440,8 +418,8 @@ const (
 	FrameworkAttemptRunning FrameworkState = "AttemptRunning"
 
 	// ConfigMap exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// FrameworkAttemptCompletionPolicy must have been satisfied.
+	// has not been deletion requested and
+	// is pending to be deletion requested.
 	// [AssociatedState]
 	// -> FrameworkAttemptDeletionRequested
 	// -> FrameworkAttemptDeleting
@@ -449,7 +427,7 @@ const (
 	FrameworkAttemptDeletionPending FrameworkState = "AttemptDeletionPending"
 
 	// ConfigMap exists and is not deleting and
-	// must have been deletion requested successfully.
+	// has been deletion requested.
 	// [AssociatedState]
 	// -> FrameworkAttemptDeleting
 	// -> FrameworkAttemptCompleted
@@ -461,17 +439,16 @@ const (
 	FrameworkAttemptDeleting FrameworkState = "AttemptDeleting"
 
 	// ConfigMap does not exist and
-	// is not expected to exist and will never exist and
-	// current attempt is not the last attempt or to be determined.
+	// has been creation requested and is not expected to exist.
 	// [AttemptFinalState]
+	// [AssociatedState]
 	// -> FrameworkAttemptCreationPending
 	// -> FrameworkCompleted
 	FrameworkAttemptCompleted FrameworkState = "AttemptCompleted"
 
-	// ConfigMap does not exist and
-	// is not expected to exist and will never exist and
-	// current attempt is the last attempt.
+	// Last FrameworkAttempt is completed.
 	// [FinalState]
+	// [AssociatedState]
 	FrameworkCompleted FrameworkState = "Completed"
 )
 
@@ -484,34 +461,34 @@ type TaskState string
 
 const (
 	// Pod does not exist and
-	// may not have been creation requested successfully and is expected to exist.
+	// has not been creation requested.
 	// [StartState]
 	// [AttemptStartState]
 	// -> TaskAttemptCreationRequested
-	// -> TaskAttemptCompleted
 	TaskAttemptCreationPending TaskState = "AttemptCreationPending"
 
 	// Pod does not exist and
-	// must have been creation requested successfully and is expected to exist.
+	// has been creation requested and is expected to exist.
 	// [AssociatedState]
 	// -> TaskAttemptPreparing
+	// -> TaskAttemptRunning
 	// -> TaskAttemptDeleting
 	// -> TaskAttemptCompleted
 	TaskAttemptCreationRequested TaskState = "AttemptCreationRequested"
 
 	// Pod exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// its PodPhase is PodPending or PodUnknown afterwards.
+	// has not been deletion requested and
+	// is PodPending or PodUnknown afterwards.
 	// [AssociatedState]
-	// -> TaskAttemptRunning
 	// -> TaskAttemptDeletionPending
+	// -> TaskAttemptRunning
 	// -> TaskAttemptDeleting
 	// -> TaskAttemptCompleted
 	TaskAttemptPreparing TaskState = "AttemptPreparing"
 
 	// Pod exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// its PodPhase is PodRunning or PodUnknown afterwards.
+	// has not been deletion requested and
+	// is PodRunning or PodUnknown afterwards.
 	// [AssociatedState]
 	// -> TaskAttemptDeletionPending
 	// -> TaskAttemptDeleting
@@ -519,8 +496,8 @@ const (
 	TaskAttemptRunning TaskState = "AttemptRunning"
 
 	// Pod exists and is not deleting and
-	// may not have been deletion requested successfully and
-	// its PodPhase is PodSucceeded or PodFailed.
+	// has not been deletion requested and
+	// is PodSucceeded or PodFailed.
 	// [AssociatedState]
 	// -> TaskAttemptDeletionRequested
 	// -> TaskAttemptDeleting
@@ -528,7 +505,7 @@ const (
 	TaskAttemptDeletionPending TaskState = "AttemptDeletionPending"
 
 	// Pod exists and is not deleting and
-	// must have been deletion requested successfully.
+	// has been deletion requested.
 	// [AssociatedState]
 	// -> TaskAttemptDeleting
 	// -> TaskAttemptCompleted
@@ -540,16 +517,15 @@ const (
 	TaskAttemptDeleting TaskState = "AttemptDeleting"
 
 	// Pod does not exist and
-	// is not expected to exist and will never exist and
-	// current attempt is not the last attempt or to be determined.
+	// has been creation requested and is not expected to exist.
 	// [AttemptFinalState]
+	// [AssociatedState]
 	// -> TaskAttemptCreationPending
 	// -> TaskCompleted
 	TaskAttemptCompleted TaskState = "AttemptCompleted"
 
-	// Pod does not exist and
-	// is not expected to exist and will never exist and
-	// current attempt is the last attempt.
+	// Last TaskAttempt is completed.
 	// [FinalState]
+	// [AssociatedState]
 	TaskCompleted TaskState = "Completed"
 )
