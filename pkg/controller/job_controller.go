@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
 	"k8s.io/client-go/rest"
 	"log"
 	"net/http"
@@ -55,8 +56,8 @@ func (jc *JobController) GetAllJobs(w http.ResponseWriter, r *http.Request) {
 }
 
 // get job by name
-func (jc *JobController) GetJobByName(w http.ResponseWriter, r *http.Request) {
-	jobName := r.FormValue("name")
+func (jc *JobController) GetJobByName(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	jobName := ps.ByName("name")
 	if job, found := jc.cache.Jobs[jobName]; found {
 		if resultBody, err := json.Marshal(job); err != nil {
 			// panic(err)

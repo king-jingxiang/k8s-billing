@@ -19,12 +19,12 @@ package app
 import (
 	"context"
 	"github.com/golang/glog"
+	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
 	"github.com/ruanxingbaozi/k8s-billing/cmd/app/options"
 	"github.com/ruanxingbaozi/k8s-billing/pkg/controller"
 	"github.com/ruanxingbaozi/k8s-billing/pkg/version"
-
+	"net/http"
 	// Register gcp auth
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
@@ -56,12 +56,21 @@ func Run(opt *options.ServerOption) error {
 	jc := controller.New(config)
 
 	go func() {
-		http.Handle("/metrics", promhttp.Handler())
-		http.HandleFunc("/", jc.Index) // 返回精简内容
-		http.HandleFunc("/jobs", jc.GetAllJobs)
-		http.HandleFunc("/pods", jc.GetAllPods)
-		http.HandleFunc("/job/:name", jc.GetJobByName)
-		glog.Fatalf("Prometheus Http Server failed %s", http.ListenAndServe(opt.ListenAddress, nil))
+
+		//http.Handle("/metrics", promhttp.Handler())
+		//http.HandleFunc("/", jc.Index) // 返回精简内容
+		//http.HandleFunc("/jobs", jc.GetAllJobs)
+		//http.HandleFunc("/pods", jc.GetAllPods)
+
+		router := httprouter.New()
+		router.Handler("GET", "/metrics", promhttp.Handler())
+		router.HandlerFunc("GET", "/", jc.Index)
+		router.HandlerFunc("GET", "/jobs", jc.GetAllJobs)
+		router.HandlerFunc("GET", "/pods", jc.GetAllPods)
+
+		router.GET("/job/:name", jc.GetJobByName)
+		glog.Fatalf("Prometheus Http Server failed %s", http.ListenAndServe(opt.ListenAddress, router))
+		//glog.Fatalf("Prometheus Http Server failed %s", http.ListenAndServe(opt.ListenAddress, nil))
 	}()
 
 	run := func(ctx context.Context) {

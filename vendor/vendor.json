@@ -165,6 +165,12 @@
 			"revisionTime": "2019-07-30T20:11:29Z"
 		},
 		{
+			"checksumSHA1": "YRhiqWDMcaCG1J5YZAsSSSeqEc4=",
+			"path": "github.com/julienschmidt/httprouter",
+			"revision": "08a3b3d20bbeeab9ca4889bcdb65fec0423ef882",
+			"revisionTime": "2019-10-05T17:17:06Z"
+		},
+		{
 			"checksumSHA1": "DpbpKmcXROLmZfFNPQOaGenZWVw=",
 			"path": "github.com/microsoft/frameworkcontroller/pkg/apis/frameworkcontroller/v1",
 			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
@@ -223,6 +229,12 @@
 			"path": "github.com/microsoft/frameworkcontroller/pkg/common",
 			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
 			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "J//TlelIbmoLYG82D2U5D2eCiXs=",
+			"path": "github.com/mohae/deepcopy",
+			"revision": "c48cc78d482608239f6c4c92a4abd87eb8761c90",
+			"revisionTime": "2017-09-29T03:49:55Z"
 		},
 		{
 			"checksumSHA1": "aFpql3G+Nw8zkzfqLWQJNZC8pu0=",
