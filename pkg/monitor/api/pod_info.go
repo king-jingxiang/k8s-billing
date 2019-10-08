@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -16,17 +17,19 @@ const (
 type PodInfo struct {
 	UID types.UID
 	// 冗余字段，记录pod版本号，功能可以跟Retry一样
-	Version       string
-	Name          string
-	TaskName      string
-	FrameworkName string
-	// todo 冗余namespace字段
+	Version  string
+	Name     string
+	TaskName string
+	JobName  string
+	//  冗余namespace字段
 	Namespace string
+	JobKey    string
+	TaskKey   string
 
 	// run time
 	RunningTime metav1.Time
 	CompateTime metav1.Time
-	RunMillsec  int32
+	RunMillsec  int64
 
 	// status
 	Status PodStatus
@@ -50,6 +53,7 @@ func NewPodInfo(pod *v1.Pod) *PodInfo {
 	podInfo := &PodInfo{
 		UID:  pod.UID,
 		Name: pod.Name,
+		Namespace:pod.Namespace,
 	}
 	// set time
 	podInfo.setPodInfoTime(pod)
@@ -61,6 +65,10 @@ func NewPodInfo(pod *v1.Pod) *PodInfo {
 	podInfo.setPodInfoFmName(pod)
 	// resource
 	podInfo.setPodInfoResource(pod)
+	jobKey := fmt.Sprintf("%v-%v", podInfo.Namespace, podInfo.JobName)
+	taskKey := fmt.Sprintf("%v-%v-%v", podInfo.Namespace, podInfo.JobName, podInfo.TaskName)
+	podInfo.JobKey = jobKey
+	podInfo.TaskKey = taskKey
 	return podInfo
 }
 
@@ -96,12 +104,13 @@ func (pi *PodInfo) setPodInfoResource(pod *v1.Pod) {
 func (podInfo *PodInfo) setPodInfoFmName(pod *v1.Pod) {
 	fmName, found := pod.Annotations[AnnotationFrameworkNameKey]
 	if found {
-		podInfo.FrameworkName = fmName
+		podInfo.JobName = fmName
 	}
 	taskName, found := pod.Annotations[AnnotationTaskRoleKey]
 	if found {
 		podInfo.TaskName = taskName
 	}
+	podInfo.Namespace = pod.Namespace
 }
 
 // set time
@@ -118,8 +127,9 @@ func (podInfo *PodInfo) setPodInfoTime(pod *v1.Pod) {
 		if podInfo.RunningTime.IsZero() {
 			podInfo.RunningTime = getPodRunningTime(pod)
 		}
-		sub := podInfo.CompateTime.Sub(podInfo.RunningTime.Time)
-		podInfo.RunMillsec = int32(sub)
+
+		sub := podInfo.CompateTime.Unix() - podInfo.RunningTime.Unix()
+		podInfo.RunMillsec = sub
 	}
 }
 
@@ -145,13 +155,31 @@ func (podInfo *PodInfo) setPodRetryCount(pod *v1.Pod) {
 	podInfo.RetryCount = maxRetryCut
 }
 
-// todo get pod run time
 func getPodRunningTime(pod *v1.Pod) metav1.Time {
 	for _, podCondition := range pod.Status.Conditions {
 		if podCondition.Type == v1.PodReady {
 			return podCondition.LastTransitionTime.Rfc3339Copy()
 		}
 	}
-	// todo 默认return 值
 	return metav1.Time{}
+}
+
+// convert
+func (pi *PodInfo) Convert() *Pod {
+	return &Pod{
+		UID:       pi.UID,
+		Version:   pi.Version,
+		Name:      pi.Name,
+		Namespace: pi.Namespace,
+
+		RunningTime: pi.RunningTime,
+		CompateTime: pi.CompateTime,
+		RunMillsec:  pi.RunMillsec,
+
+		Status:     pi.Status,
+		RetryCount: pi.RetryCount,
+		GpuType:    pi.GpuType,
+
+		Resource: pi.Resource,
+	}
 }

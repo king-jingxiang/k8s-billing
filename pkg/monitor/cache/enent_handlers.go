@@ -1,11 +1,12 @@
 package cache
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	fcapi "github.com/microsoft/frameworkcontroller/pkg/apis/frameworkcontroller/v1"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/cache"
-	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 )
 
 // pod crd
@@ -41,7 +42,7 @@ func (cc *BillingCache) UpdatePod(oldObj, newObj interface{}) {
 	cc.Mutex.Lock()
 	defer cc.Mutex.Unlock()
 
-	err := cc.updatePod(newPod)
+	err := cc.updatePod(newPod, oldPod)
 	if err != nil {
 		glog.Errorf("Failed to update pod %v in cache: %v", oldPod.Name, err)
 		return
@@ -144,54 +145,69 @@ func (cc *BillingCache) DeleteFramework(obj interface{}) {
 func (cc *BillingCache) addPod(pod *v1.Pod) error {
 	// convert podInfo
 	pi := api.NewPodInfo(pod)
-	if len(pi.FrameworkName) > 0 {
+	if len(pi.JobName) > 1 {
 		// create task info
 		ti := cc.getOrCreateTask(pi)
 		// create framework info
 		fi := cc.getOrCreateFramework(ti)
 		// add to cache
 		cc.Pods[pi.Name] = pi
-		cc.Tasks[pi.TaskName] = ti
-		cc.Jobs[pi.FrameworkName] = fi
+		cc.Tasks[pi.TaskKey] = ti
+		cc.Jobs[pi.JobKey] = fi
 	}
 	return nil
 }
 
 // update pod
-func (cc *BillingCache) updatePod(newPod *v1.Pod) error {
+func (cc *BillingCache) updatePod(newPod, oldPod *v1.Pod) error {
 	// convert podInfo
-	newpi := api.NewPodInfo(newPod)
-
-	if len(newpi.FrameworkName) > 0 {
-		pi := cc.Pods[newpi.Name]
+	oldpi := api.NewPodInfo(oldPod)
+	if len(oldpi.JobName) > 0 {
+		pi := cc.Pods[oldpi.Name]
 		pi.UpdatePodInfo(newPod)
 
-		ti := cc.Tasks[pi.TaskName]
+		ti := cc.Tasks[pi.TaskKey]
 		ti.UpdatePod(pi)
 
-		fi := cc.Jobs[pi.FrameworkName]
+		fi := cc.Jobs[pi.JobKey]
 		fi.UpdateTask(ti)
 
-		cc.Pods[pi.Name] = pi
-		cc.Tasks[pi.TaskName] = ti
-		cc.Jobs[pi.FrameworkName] = fi
+		cc.Pods[oldpi.Name] = pi
+		cc.Tasks[pi.TaskKey] = ti
+		cc.Jobs[pi.JobKey] = fi
 	}
 	return nil
+}
+
+// delete pod 不在这里进行删除，只进行更新，定期清理cache
+func (cc *BillingCache) deletePod(pod *v1.Pod) interface{} {
+	return cc.updatePod(pod, pod)
 }
 
 // add framework
 func (cc *BillingCache) addFramework(fm *fcapi.Framework) error {
 	newfi := api.NewFrameworkInfoByFramework(fm)
-	if fi, found := cc.Jobs[newfi.JobName]; found {
-		newfi.UpdateFramework(fi)
+	if len(newfi.JobKey) > 1 {
+		if fi, found := cc.Jobs[newfi.JobKey]; found {
+			newfi.UpdateJobInfo(fi)
+		}
+		cc.Jobs[newfi.JobKey] = newfi
 	}
-	cc.Jobs[newfi.JobName] = newfi
 	return nil
 }
 
-// update framework
+// update framework delete 校验ns和name
 func (cc *BillingCache) updateFramework(fm *fcapi.Framework) error {
-	return cc.updateFramework(fm)
+	jobKey := fmt.Sprintf("%v-%v", fm.Namespace, fm.Name)
+	if len(jobKey) > 1 {
+		if info, found := cc.Jobs[jobKey]; found {
+			info.UpdateFramework(fm)
+			cc.Jobs[jobKey] = info
+		} else {
+			return cc.addFramework(fm)
+		}
+	}
+	return nil
 }
 
 // delete framework
@@ -199,14 +215,9 @@ func (cc *BillingCache) deleteFramework(fm *fcapi.Framework) error {
 	return cc.updateFramework(fm)
 }
 
-// delete pod 不在这里进行删除，只进行更新，定期清理cache
-func (cc *BillingCache) deletePod(pod *v1.Pod) interface{} {
-	return cc.updatePod(pod)
-}
-
 // get or create task info
 func (cc *BillingCache) getOrCreateTask(pi *api.PodInfo) *api.TaskInfo {
-	if ti, found := cc.Tasks[pi.TaskName]; found {
+	if ti, found := cc.Tasks[pi.TaskKey]; found {
 		ti.AddPod(pi)
 		return ti
 	}
@@ -215,7 +226,7 @@ func (cc *BillingCache) getOrCreateTask(pi *api.PodInfo) *api.TaskInfo {
 
 // get or create framework info
 func (cc *BillingCache) getOrCreateFramework(ti *api.TaskInfo) *api.JobInfo {
-	if fi, found := cc.Jobs[ti.FrameworkName]; found {
+	if fi, found := cc.Jobs[ti.JobKey]; found {
 		fi.AddTask(ti)
 		return fi
 	}

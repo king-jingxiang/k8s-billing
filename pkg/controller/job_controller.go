@@ -97,6 +97,6 @@ func (jc *JobController) GetAllPods(w http.ResponseWriter, r *http.Request) {
 func (jc *JobController) Run(stopCh <-chan struct{}) {
 	go jc.cache.Run(stopCh)
 	// todo sync
-	//jc.cache.WaitForCacheSync(stopCh)
+	// jc.cache.WaitForCacheSync(stopCh)
 
 }

@@ -1,0 +1,319 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "rasgUuf7DVFShc3hKeh9wjWBWO0=",
+			"path": "github.com/gogo/protobuf/gogoproto",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "iJy58JkOJxhuyWW0RDbzE65Ms7A=",
+			"path": "github.com/gogo/protobuf/plugin/compare",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "TJCl1W3nXbpBqeL0FqUbLxvLj2Y=",
+			"path": "github.com/gogo/protobuf/plugin/defaultcheck",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "30CshOdSNU5CWITX3ZXYrDpcWPI=",
+			"path": "github.com/gogo/protobuf/plugin/description",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "Gg0c45e19o70P6vvs3i5pv/erqo=",
+			"path": "github.com/gogo/protobuf/plugin/embedcheck",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "knMp74dhZW43DcXWo3yykjhLWck=",
+			"path": "github.com/gogo/protobuf/plugin/enumstringer",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "/iy4Db2IjmZwI04VsvN7Di1qWPY=",
+			"path": "github.com/gogo/protobuf/plugin/equal",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "oW5qWSA/x87Xa5ZjBcgWMwdL99I=",
+			"path": "github.com/gogo/protobuf/plugin/face",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "gkHgitu03SO7m+s/kKSv5sCuIKs=",
+			"path": "github.com/gogo/protobuf/plugin/gostring",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "Rc9nn4+D3Nla31ahSnhtpzrwTiA=",
+			"path": "github.com/gogo/protobuf/plugin/marshalto",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "EM1zgWiW8983vDSmliZC4gIjDRw=",
+			"path": "github.com/gogo/protobuf/plugin/oneofcheck",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "z41P2QgvKlqM24UltTADzQf7Jh8=",
+			"path": "github.com/gogo/protobuf/plugin/populate",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "xLTM3Upe0sOSlvsf64AdYNYCnBY=",
+			"path": "github.com/gogo/protobuf/plugin/size",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "UB21Pm3og2UdtWhs3RAE//a9maw=",
+			"path": "github.com/gogo/protobuf/plugin/stringer",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "pMp4Z/1OFvgCkOCaMZGUmaJltQo=",
+			"path": "github.com/gogo/protobuf/plugin/testgen",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "2TxfbXOOPHSKCUdU17i+Vl+ZJQs=",
+			"path": "github.com/gogo/protobuf/plugin/union",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "qSvji9SnlXUBoId+4caxf1dCCMk=",
+			"path": "github.com/gogo/protobuf/plugin/unmarshal",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "UOpwKJPNOnN3MO4uUmYIbqOrXqo=",
+			"path": "github.com/gogo/protobuf/proto/proto3_proto",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "iJKomW5UgUd1mQCK8aEM0+bJfBc=",
+			"path": "github.com/gogo/protobuf/proto/test_proto",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "5yAWa5gKMF3qlvgSjZW9uroYBxs=",
+			"path": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "xPCQzC9lLvCfe1po8wqiWqK1Qsg=",
+			"path": "github.com/gogo/protobuf/protoc-gen-gogo/generator",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "ZzDxnxyPhuKN64Bg9+MyH0Pi7XA=",
+			"path": "github.com/gogo/protobuf/protoc-gen-gogo/generator/internal/remap",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "xzqK6dPP/jNdejpvOFk0VNcFM4g=",
+			"path": "github.com/gogo/protobuf/protoc-gen-gogo/grpc",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "hCsNCe3fi/vyyP8/UIsFaOmW0xQ=",
+			"path": "github.com/gogo/protobuf/protoc-gen-gogo/plugin",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "dLCFlHid9smRSQppCcvk5ojlvuw=",
+			"path": "github.com/gogo/protobuf/types",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "nEYwRf/FEV6ejMCI/QgYA3s1PbY=",
+			"path": "github.com/gogo/protobuf/vanity",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "GeMa6Un5ZjE3zXyCF13pti4UD0Q=",
+			"path": "github.com/gogo/protobuf/vanity/command",
+			"revision": "28a6bbf47e48e0b2220b2a244750b660c83d4942",
+			"revisionTime": "2019-07-30T20:11:29Z"
+		},
+		{
+			"checksumSHA1": "DpbpKmcXROLmZfFNPQOaGenZWVw=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/apis/frameworkcontroller/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "UllYyfK+3bFbs9Oje8jnBh0Znfg=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/clientset/versioned",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "yZWXe3WPUb+4mpdf+oVQXltw+T8=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/clientset/versioned/scheme",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "0TYenRI2PNYtsVb3LzdPc5u42hs=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/clientset/versioned/typed/frameworkcontroller/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "vyEy8tqdAV+8Sohhv4EiBesn2Wc=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/informers/externalversions",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "XXLUL4Jxwaghk2qbTXsBRBVqZ9o=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/informers/externalversions/frameworkcontroller",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "HGqAxaPteSWk7SePnLi+QPPxo8k=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/informers/externalversions/frameworkcontroller/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "9IQV2aGTzVUTh9xxRln9ASiV4Qg=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/informers/externalversions/internalinterfaces",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "cNGA4lyOjzzXtdNEBUy/zA4WzXw=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/client/listers/frameworkcontroller/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "Es8MesgA5/MwrSVVvmm+pa/qthc=",
+			"path": "github.com/microsoft/frameworkcontroller/pkg/common",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "aFpql3G+Nw8zkzfqLWQJNZC8pu0=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/golang.org/x/net/context/ctxhttp",
+			"path": "golang.org/x/net/context/ctxhttp",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "z2s/+3iHtuah/YFVNEuBcNVGjHg=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/api/coordination/v1",
+			"path": "k8s.io/api/coordination/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "yFeA725E81YTmrFYq/fSEVcyx+s=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/api/networking/v1beta1",
+			"path": "k8s.io/api/networking/v1beta1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "YdbY1A5fPdl8j6eWMhEESMIdf9k=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/api/node/v1alpha1",
+			"path": "k8s.io/api/node/v1alpha1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "RQWv+79XJe/SYgUVmDJEcZHvVp0=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/api/node/v1beta1",
+			"path": "k8s.io/api/node/v1beta1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "1cYSpKkIrNKz93Ph/kmqfLBqLSs=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/api/scheduling/v1",
+			"path": "k8s.io/api/scheduling/v1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "srBOFXIF1TtTBJWBH2QdxGFN7/8=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/apiextensions-apiserver/pkg/apis/apiextensions",
+			"path": "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "B/lKwDZ0z8QHlwyMB1/GPdrdKwI=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1",
+			"path": "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "PCmCOo7V1KqZAd4iFALqcNjBt5A=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/client-go/util/keyutil",
+			"path": "k8s.io/client-go/util/keyutil",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "kq6xH0+bVZEvxj6dlcCVB/IEn8E=",
+			"path": "k8s.io/component-base/cli/flag",
+			"revision": "804254d5600483f35d94e1cab8b10d40310def3d",
+			"revisionTime": "2019-09-26T08:25:37Z"
+		},
+		{
+			"checksumSHA1": "YOucGCCS3js1TfTtD0qBcXW3xFU=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/utils/buffer",
+			"path": "k8s.io/utils/buffer",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "rZ3TvI01NH0dGKeSwx+8HTHj4q8=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/utils/integer",
+			"path": "k8s.io/utils/integer",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		},
+		{
+			"checksumSHA1": "/4uAXzV5jLElTQQ9I3eA76oYoMw=",
+			"origin": "github.com/microsoft/frameworkcontroller/vendor/k8s.io/utils/trace",
+			"path": "k8s.io/utils/trace",
+			"revision": "e3f87a31bfc9f2a24912f2203c4f353c86d4b341",
+			"revisionTime": "2019-09-25T08:59:08Z"
+		}
+	],
+	"rootPath": "github.com/ruanxingbaozi/k8s-billing"
+}

@@ -57,7 +57,7 @@ func Run(opt *options.ServerOption) error {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		http.HandleFunc("/", jc.Index)
+		http.HandleFunc("/", jc.Index) // 返回精简内容
 		http.HandleFunc("/jobs", jc.GetAllJobs)
 		http.HandleFunc("/pods", jc.GetAllPods)
 		http.HandleFunc("/job/:name", jc.GetJobByName)

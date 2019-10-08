@@ -6,13 +6,15 @@ import (
 	frameworkClient "github.com/microsoft/frameworkcontroller/pkg/client/clientset/versioned"
 	frameworkInformer "github.com/microsoft/frameworkcontroller/pkg/client/informers/externalversions"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/wait"
+	"time"
 
+	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 	kubeInformer "k8s.io/client-go/informers"
 	kubeClient "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
-	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 	"sync"
 )
 
@@ -31,9 +33,10 @@ type BillingCache struct {
 	fmInformer  cache.SharedIndexInformer
 
 	// data
-	Pods  map[string]*api.PodInfo
-	Tasks map[string]*api.TaskInfo
-	Jobs  map[string]*api.JobInfo
+	Pods     map[string]*api.PodInfo
+	Tasks    map[string]*api.TaskInfo
+	Jobs     map[string]*api.JobInfo
+	SnapShot *api.ClusterInfo
 }
 
 // New returns a Cache implementation.
@@ -70,12 +73,6 @@ func NewChargingCache(config *rest.Config) *BillingCache {
 		DeleteFunc: cc.DeleteFramework,
 	}, 0)
 	return cc
-}
-
-// Run  starts the schedulerCache
-func (cc *BillingCache) Run(stopCh <-chan struct{}) {
-	go cc.podInformer.Run(stopCh)
-	go cc.fmInformer.Run(stopCh)
 }
 
 // clean fm
@@ -126,30 +123,40 @@ func CreateClients(kConfig *rest.Config) (kubeClient.Interface, frameworkClient.
 	return kClient, fClient
 }
 
+//  每n秒执行一次snapshot，更新cache
 // Snapshot returns the complete snapshot of the cluster from cache
-func (bc *BillingCache) Snapshot() *api.ClusterInfo {
+func (bc *BillingCache) UpdateSnapshot() {
 	bc.Mutex.Lock()
 	defer bc.Mutex.Unlock()
 
 	snapshot := &api.ClusterInfo{
-		Jobs:  make(map[string]*api.JobInfo),
-		Tasks: make(map[string]*api.TaskInfo),
-		Pods:  make(map[string]*api.PodInfo),
+		Jobs: make(map[string]*api.Job),
 	}
 	runningJob := 0
 	for key, value := range bc.Jobs {
-		// todo value.Clone()
-		snapshot.Jobs[key] = value
+		snapshot.Jobs[key] = value.Convert()
 		if value.Status != nil && value.Status.State == fcapi.FrameworkAttemptRunning {
 			runningJob++
 		}
 	}
-	for k, v := range bc.Tasks {
-		snapshot.Tasks[k] = v
-	}
-	for k, v := range bc.Pods {
-		snapshot.Pods[k] = v
-	}
 	snapshot.RunningJobs = len(bc.Jobs)
-	return snapshot
+	bc.SnapShot = snapshot
+}
+
+// return snapshot
+func (bc *BillingCache) Snapshot() *api.ClusterInfo {
+	if bc.SnapShot != nil {
+		return bc.SnapShot
+	}
+	bc.UpdateSnapshot()
+	return bc.SnapShot
+}
+
+// Run  starts the schedulerCache
+func (bc *BillingCache) Run(stopCh <-chan struct{}) {
+	go bc.podInformer.Run(stopCh)
+	go bc.fmInformer.Run(stopCh)
+
+	// sync
+	go wait.Until(bc.UpdateSnapshot, 5*time.Second, stopCh)
 }
