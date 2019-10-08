@@ -9,7 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"time"
 
-	"k8s-billing/pkg/monitor/api"
+	"github.com/ruanxingbaozi/k8s-billing/pkg/monitor/api"
 	kubeInformer "k8s.io/client-go/informers"
 	kubeClient "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
