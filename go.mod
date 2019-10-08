@@ -6,7 +6,6 @@ require (
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/microsoft/frameworkcontroller v0.3.0
-	github.com/mohae/deepcopy v0.0.0-20170603005431-491d3605edfb
 	github.com/prometheus/client_golang v0.9.2
 	github.com/spf13/pflag v1.0.1
 	k8s.io/api v0.0.0
